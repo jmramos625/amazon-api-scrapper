@@ -1,14 +1,17 @@
-document.addEventListener('DOMContentLoaded', () => {
+// This file contains the JavaScript code that runs in the browser.
+// It fetches the search results from the backend and displays them on the page.
+document.addEventListener('DOMContentLoaded', () => { // adding an event listener to the document
+  // Get elements from the DOM
   const keywordInput = document.getElementById('keywordInput');
   const searchButton = document.getElementById('searchButton');
   const resultsContainer = document.getElementById('resultsContainer');
   const loadingElement = document.getElementById('loading');
   const errorContainer = document.getElementById('errorContainer');
 
-  searchButton.addEventListener('click', async () => {
+  searchButton.addEventListener('click', async () => { // adding an event listener to the search button
     const keyword = keywordInput.value.trim();
     
-    if (!keyword) {
+    if (!keyword) { // keyword is required
       showError('Please enter a search keyword');
       return;
     }
@@ -22,29 +25,29 @@ document.addEventListener('DOMContentLoaded', () => {
       loadingElement.style.display = 'flex';
       
       // Fetch data from backend
-      const response = await fetch(`http://localhost:3000/api/scrape?keyword=${encodeURIComponent(keyword)}`);
+      const response = await fetch(`http://localhost:3000/api/scrape?keyword=${encodeURIComponent(keyword)}`); // sending the request to the backend
       
-      if (!response.ok) {
+      if (!response.ok) { // if the response is not ok
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to fetch data');
       }
       
-      const products = await response.json();
+      const products = await response.json(); // getting the response data
       
-      if (products.length === 0) {
+      if (products.length === 0) { // if no products are found
         showError('No products found. Try a different search term.');
         return;
       }
       
-      displayResults(products);
+      displayResults(products); // displaying the results
     } catch (error) {
       showError(error.message);
-    } finally {
-      loadingElement.style.display = 'none';
+    } finally { // finally block to hide the loading element
+      loadingElement.style.display = 'none'; // hiding the loading element
     }
   });
 
-  function displayResults(products) {
+  function displayResults(products) { // function to display the results
     resultsContainer.innerHTML = products.map(product => `
       <div class="product-card">
         <img src="${product.imageUrl}" alt="${product.title}" class="product-image">
@@ -59,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <p class="reviews">${product.reviews ? `${product.reviews.toLocaleString()} reviews` : 'No reviews'}</p>
         </div>
       </div>
-    `).join('');
+    `).join('');// mapping through the products and displaying the product data
   }
 
   function showError(message) {
